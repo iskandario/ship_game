@@ -65,3 +65,7 @@ class Protocol:
         if message["type"] != "state_update":
             raise ValueError(f"Неподдерживаемый тип сообщения: {message['type']}")
         return message["payload"]
+    
+    @staticmethod
+    def encode_bomb_command():
+        return Protocol.encode_message("fire", {})

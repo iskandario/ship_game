@@ -38,18 +38,25 @@ class ClientManager:
                     command = decoded_message["payload"]["command"]  # Извлекаем команду из декодированного сообщения
                     print(f"Принята команда от клиента: {command}")  # Лог
                     self.logic.update_gun(command)
+                if decoded_message["type"] == "fire":
+                    self.logic.fire_bomb()
+
         except ConnectionResetError:
             self.clients.remove(client_socket)
             client_socket.close()
 
     def update_game_state(self):
-        """Отправляет текущее состояние игры клиентам."""
         while True:
             self.logic.generate_ships()
+            self.logic.update_bombs()
+            self.logic.check_collisions()
+            self.logic.update_explosions()
             state_data = Protocol.encode_game_state(self.logic.get_state())
 
-            for client in self.clients:
+            for client in list(self.clients):
                 try:
                     client.sendall(state_data)
-                except BrokenPipeError:
+                except (BrokenPipeError, OSError):
+                    print("Соединение с клиентом потеряно.")
                     self.clients.remove(client)
+

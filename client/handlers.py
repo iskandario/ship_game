@@ -33,6 +33,14 @@ class ClientHandler:
         except BrokenPipeError:
             print("Соединение с сервером потеряно.")
 
+    def send_fire_command(self):
+        """Отправляет команду выстрела на сервер."""
+        message = Protocol.encode_message("fire", {})
+        try:
+            self.socket.sendall(message)
+        except BrokenPipeError:
+            print("Соединение с сервером потеряно.")
+
     def get_state(self):
         """Возвращает текущее состояние игры."""
         return self.state
