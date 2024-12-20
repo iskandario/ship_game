@@ -33,9 +33,3 @@ class Renderer:
         rotated_gun = pygame.transform.rotate(self.gun_image, gun_angle - 90)
         gun_rect = rotated_gun.get_rect(center=(gun_x, gun_y))
         screen.blit(rotated_gun, gun_rect.topleft)
-
-
-
-
-
-

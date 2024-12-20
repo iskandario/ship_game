@@ -59,4 +59,3 @@ class ClientManager:
                 except (BrokenPipeError, OSError):
                     print("Соединение с клиентом потеряно.")
                     self.clients.remove(client)
-
