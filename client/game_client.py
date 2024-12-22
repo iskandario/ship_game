@@ -104,10 +104,10 @@ class GameClient:
         pygame.quit()
 
     def play_game(self, screen, clock):
-        previous_ships = set()
         self.shots_fired = 0
         self.ships_destroyed = 0
         self.game_over = False
+        self.handler.send_reset_command()
 
         while True:
             for event in pygame.event.get():
@@ -115,9 +115,9 @@ class GameClient:
                     return
 
             if self.game_over:
-                self.display_game_over(screen)
+                self.display_game_over(screen, state.get("ships_destroyed", 0) )
                 pygame.display.flip()
-                save_result(self.username, self.shots_fired, self.ships_destroyed)
+                save_result(self.username, self.shots_fired, state.get("ships_destroyed", 0))
                 while True:
                     for event in pygame.event.get():
                         if event.type == pygame.KEYDOWN:
@@ -141,11 +141,6 @@ class GameClient:
                 self.space_pressed = False
 
             state = self.handler.get_state()
-            current_ships = {ship["id"] for ship in state.get("ships", [])}
-
-            destroyed_ships = previous_ships - current_ships
-            self.ships_destroyed += len(destroyed_ships)
-            previous_ships = current_ships
 
             self.renderer.render(
                 screen,
@@ -154,18 +149,28 @@ class GameClient:
                 state.get("bombs", []),
                 state.get("explosions", [])
             )
+            self.display_stats(screen, state.get("ships_destroyed", 0))
             pygame.display.flip()
             clock.tick(60)
 
-        pygame.quit()
+    pygame.quit()
 
-    def display_game_over(self, screen):
+    def display_stats(self, screen, ships_destroyed):
+        font = pygame.font.Font(None, 36)
+        stats_text = (
+            f"Shots Fired: {self.shots_fired}  "
+            f"Ships Destroyed: {ships_destroyed}"
+        )
+        text_surface = font.render(stats_text, True, (255, 255, 255))
+        screen.blit(text_surface, (10, 10))
+
+    def display_game_over(self, screen, ships_destroyed):
         font = pygame.font.Font(None, 74)
         text = font.render("Game Over", True, (255, 0, 0))
         text_rect = text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 - 50))
         screen.blit(text, text_rect)
 
-        stats = f"Shots: {self.shots_fired}, Ships Destroyed: {self.ships_destroyed}"
+        stats = f"Shots: {self.shots_fired}, Ships Destroyed: {ships_destroyed}"
         stats_text = font.render(stats, True, (255, 255, 255))
         stats_rect = stats_text.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 2 + 50))
         screen.blit(stats_text, stats_rect)

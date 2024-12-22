@@ -57,6 +57,12 @@ class Protocol:
         return Protocol.encode_message("state_update", state)
 
     @staticmethod
+    def encode_reset_command():
+        """Кодирует команду сброса состояния игры."""
+        return Protocol.encode_message("reset_game", {})
+
+
+    @staticmethod
     def decode_game_state(data):
         """
         Декодирует состояние игры (корабли и пушка).

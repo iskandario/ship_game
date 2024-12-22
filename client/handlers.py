@@ -44,3 +44,11 @@ class ClientHandler:
     def get_state(self):
         """Возвращает текущее состояние игры."""
         return self.state
+    
+    def send_reset_command(self):
+        """Отправляет команду сброса состояния игры."""
+        message = Protocol.encode_reset_command()
+        try:
+            self.socket.sendall(message)
+        except BrokenPipeError:
+            print("Соединение с сервером потеряно.")
