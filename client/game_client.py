@@ -114,8 +114,11 @@ class GameClient:
                 if event.type == pygame.QUIT:
                     return
 
+            state = self.handler.get_state()
+            self.game_over = self.shots_fired >= 10 and len(state.get("bombs", [])) == 0
+
             if self.game_over:
-                self.display_game_over(screen, state.get("ships_destroyed", 0) )
+                self.display_game_over(screen, state.get("ships_destroyed", 0))
                 pygame.display.flip()
                 save_result(self.username, self.shots_fired, state.get("ships_destroyed", 0))
                 while True:
@@ -135,12 +138,8 @@ class GameClient:
                     self.handler.send_fire_command()
                     self.space_pressed = True
                     self.shots_fired += 1
-                if self.shots_fired >= 10:
-                    self.game_over = True
             else:
                 self.space_pressed = False
-
-            state = self.handler.get_state()
 
             self.renderer.render(
                 screen,
@@ -153,7 +152,7 @@ class GameClient:
             pygame.display.flip()
             clock.tick(60)
 
-    pygame.quit()
+            
 
     def display_stats(self, screen, ships_destroyed):
         font = pygame.font.Font(None, 36)
