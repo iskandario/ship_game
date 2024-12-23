@@ -15,27 +15,44 @@ class GameLogic:
         self.ship_id_counter = 1
         self.ships_destroyed = 0
         self.shots_fired = 0  
-        self.gun = Gun(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 70)
+        # Центрируем пушку
+        self.gun = Gun(WINDOW_WIDTH // 2, WINDOW_HEIGHT - 100)
 
     def generate_ships(self):
+        """Создаёт новые корабли и обновляет их движение."""
+        # Удаляем корабли, которые вышли за пределы поля или взорвались
         self.ships = [
             ship for ship in self.ships
             if not ship.get("out_of_bounds") and not ship.get("exploding")
         ]
+
+        # Генерация новых кораблей
         if len(self.ships) < 2 and random.random() < 0.02:
             self.ships.append({
                 "id": self.ship_id_counter,
-                "x": -50,
-                "y": random.randint(*SHIP_Y_RANGE),
+                "x": -50,  # Начинаем за левым краем игрового поля
+                "y": random.randint(50, WINDOW_HEIGHT // 2),  # Центрируем по вертикали
                 "speed": random.uniform(*SHIP_SPEED_RANGE),
+                "base_y": random.randint(50, WINDOW_HEIGHT // 2),  # Базовая высота для синусоиды
                 "out_of_bounds": False,
                 "exploding": False,
                 "explosion_timer": 0,
+                "wave_offset": random.uniform(0, math.pi * 2),  # Сдвиг фазы синусоиды
             })
             self.ship_id_counter += 1
+
         for ship in self.ships:
-            ship["x"] += ship["speed"] * 0.005
-            if ship["x"] >= WINDOW_WIDTH:
+            # Лёгкое изменение скорости
+            if random.random() < 0.1:  # 10% вероятность небольшого изменения скорости
+                ship["speed"] += random.uniform(-0.1, 0.1)
+                ship["speed"] = max(0.5, min(ship["speed"], max(SHIP_SPEED_RANGE)))
+
+            # Движение по синусоиде
+            ship["y"] = ship["base_y"] + math.sin(ship["x"] * 0.02 + ship["wave_offset"]) * 10
+
+            # Обновляем положение корабля
+            ship["x"] += ship["speed"] * 0.008
+            if ship["x"] >= WINDOW_WIDTH:  # Корабль вышел за правую границу поля
                 ship["out_of_bounds"] = True
 
     def fire_bomb(self):
@@ -91,7 +108,7 @@ class Bomb:
         self.x = x
         self.y = y
         self.angle = angle
-        self.speed = 1  # Скорость бомбы
+        self.speed = 2  # Скорость бомбы
 
     def move(self):
         self.x += self.speed/200 * math.cos(math.radians(self.angle))

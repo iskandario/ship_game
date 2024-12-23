@@ -4,9 +4,13 @@ from resources import load_assets
 
 
 class Renderer:
-    def __init__(self):
+    def __init__(self, window_width=WINDOW_WIDTH, window_height=WINDOW_HEIGHT):
         self.assets = load_assets()
-        self.background = pygame.transform.scale(self.assets["background"], (WINDOW_WIDTH, WINDOW_HEIGHT))
+        self.window_width = window_width
+        self.window_height = window_height
+
+        # Масштабируем элементы под размеры окна
+        self.background = pygame.transform.scale(self.assets["background"], (self.window_width, self.window_height))
         self.ship_image = pygame.transform.scale(self.assets["ship"], (50, 40))
         self.gun_image = pygame.transform.scale(self.assets["gun"], (70, 140))
         self.bomb_image = pygame.transform.scale(self.assets["bomb"], (20, 20))

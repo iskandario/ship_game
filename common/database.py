@@ -36,3 +36,26 @@ def get_results(username):
     results = cursor.fetchall()
     conn.close()
     return results
+
+
+def get_top_scores():
+    conn = sqlite3.connect("game_results.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT username, MAX(ships_destroyed) as max_destroyed 
+        FROM results 
+        GROUP BY username 
+        ORDER BY max_destroyed DESC 
+        LIMIT 10
+    """)
+    top_scores = cursor.fetchall()
+    conn.close()
+    return top_scores
+
+def clear_database():
+    conn = sqlite3.connect("game_results.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM results")  # Удаляет все записи из таблицы
+    conn.commit()
+    conn.close()
+    print("База данных очищена.")
