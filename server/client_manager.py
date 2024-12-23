@@ -52,6 +52,7 @@ class ClientManager:
         self.logic.generate_ships()
         self.logic.update_bombs()
         self.logic.check_collisions()
+        self.logic.update_explosions()
         state_data = Protocol.encode_game_state(self.logic.get_state())
 
         for client in list(self.clients):

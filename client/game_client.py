@@ -44,6 +44,53 @@ class GameClient:
             pygame.draw.rect(screen, color, input_box, 2)
             pygame.display.flip()
 
+    def show_top_scores(self, screen):
+        """Отображает экран с таблицей лидеров."""
+        font = pygame.font.Font(None, 74)
+        small_font = pygame.font.Font(None, 36)
+        title_text = "Top Scores"
+        title_surface = font.render(title_text, True, (255, 255, 255))
+        
+        # Получаем результаты из базы данных
+        top_scores = get_top_scores()
+
+        while True:
+            screen.fill((0, 0, 0))
+            # Рисуем заголовок
+            screen.blit(title_surface, (WINDOW_WIDTH // 2 - title_surface.get_width() // 2, 50))
+            
+            # Отображаем топ-результаты
+            for i, score in enumerate(top_scores[:10]):  # Ограничиваем до 10 результатов
+                # Пытаемся распаковать данные в две переменные
+                try:
+                    username, max_destroyed = score
+                    text = f"{i + 1}. {username}: {max_destroyed} destroyed"
+                except ValueError:
+                    # Если данных недостаточно, отображаем "-"
+                    username = score[0]
+                    text = f"{i + 1}. {username}: - destroyed"
+                
+                score_surface = small_font.render(text, True, (255, 255, 255))
+                screen.blit(score_surface, (50, 150 + i * 40))
+
+            # Инструкция по выходу
+            exit_text = "Press any key to return to menu"
+            exit_surface = small_font.render(exit_text, True, (255, 255, 255))
+            screen.blit(exit_surface, (WINDOW_WIDTH // 2 - exit_surface.get_width() // 2, WINDOW_HEIGHT - 50))
+
+            pygame.display.flip()
+
+            # Обрабатываем события
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    exit()
+                if event.type == pygame.KEYDOWN:
+                    return  # Выход в главное меню
+
+
+
+
     def main_menu(self, screen):
         font = pygame.font.Font(None, 74)
         title_font = pygame.font.Font(None, 100)
