@@ -1,41 +1,45 @@
+import socket
 import json
 import struct
 
-
 class Protocol:
     HEADER_FORMAT = "!I"  # Формат заголовка: длина сообщения (4 байта)
+    HEADER_SIZE = struct.calcsize(HEADER_FORMAT)
 
     @staticmethod
     def encode_message(message_type, payload):
         """
-        Кодирует сообщение: сериализация в JSON, преобразование в бинарный формат.
+        Кодирует сообщение и отправляет его через указанный сокет.
         """
+        # Создаем сообщение DTO
         dto = {
             "type": message_type,
-            "payload": payload,
+            "payload": payload
         }
-        json_data = json.dumps(dto).encode("utf-8")  # Преобразуем JSON в байты
+        # Преобразуем в JSON и затем в байты
+        json_data = json.dumps(dto).encode("utf-8")
+        # Определяем длину сообщения
         length = len(json_data)
-
-        # Формируем заголовок и сообщение
+        # Формируем заголовок
         header = struct.pack(Protocol.HEADER_FORMAT, length)
         return header + json_data
 
     @staticmethod
     def decode_message(data):
         """
-        Декодирует бинарное сообщение обратно в JSON.
+        Получает и декодирует сообщение из указанных данных.
         """
+        # Определяем длину сообщения
         header_size = struct.calcsize(Protocol.HEADER_FORMAT)
         message_length = struct.unpack(Protocol.HEADER_FORMAT, data[:header_size])[0]
         json_data = data[header_size:header_size + message_length]
+        # Декодируем JSON обратно в объект
         return json.loads(json_data.decode("utf-8"))
 
-    # Методы для работы с пушкой
     @staticmethod
     def encode_gun_command(command):
         """
-        Кодирует команду управления пушкой (от клиента).
+        Кодирует команду управления пушкой.
         """
         return Protocol.encode_message("gun_command", {"command": command})
 
@@ -57,12 +61,6 @@ class Protocol:
         return Protocol.encode_message("state_update", state)
 
     @staticmethod
-    def encode_reset_command():
-        """Кодирует команду сброса состояния игры."""
-        return Protocol.encode_message("reset_game", {})
-
-
-    @staticmethod
     def decode_game_state(data):
         """
         Декодирует состояние игры (корабли и пушка).
@@ -71,7 +69,17 @@ class Protocol:
         if message["type"] != "state_update":
             raise ValueError(f"Неподдерживаемый тип сообщения: {message['type']}")
         return message["payload"]
-    
+
+    @staticmethod
+    def encode_reset_command():
+        """
+        Кодирует команду сброса состояния игры.
+        """
+        return Protocol.encode_message("reset_game", {})
+
     @staticmethod
     def encode_bomb_command():
+        """
+        Кодирует команду выстрела.
+        """
         return Protocol.encode_message("fire", {})
