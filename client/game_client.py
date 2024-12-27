@@ -85,18 +85,38 @@ class GameClient:
         title_font = pygame.font.Font(None, 100)
         menu_items = ["1. Play", "2. Top Scores", "3. Change User", "4. Exit"]
 
-        title = "PIRATE GUN"
+        title = "PIRATE GUN"  # Полный текст заголовка
         title_colors = [(255, 0, 0), (255, 255, 0), (0, 255, 0), (0, 255, 255), (0, 0, 255), (255, 0, 255)]
+
+        letter_spacing = 60 
+        adjustments = {
+        "I": -15, 
+         }
+        pirate_width = 80  # Ширина изображения пирата
+        text_width = len(title) * letter_spacing  # Общая ширина текста
+        total_width = text_width + pirate_width  # Общая ширина текста + пирата
+
+        # Вычисляем стартовую позицию для центрирования
+        start_x = (WINDOW_WIDTH - total_width) // 2
+
         while True:
             screen.fill((0, 0, 0))
-            x_offset = WINDOW_WIDTH // 2 - len(title) * 30
+
+            # Отрисовка текста "PIRATE GUN"
+            x_pos = start_x
             for i, letter in enumerate(title):
                 letter_surface = title_font.render(letter, True, title_colors[i % len(title_colors)])
-                screen.blit(letter_surface, (x_offset + i * 60, 50))
+                screen.blit(letter_surface, (x_pos, 50))
+                x_pos += letter_spacing + adjustments.get(letter, 0)
 
+            # Отрисовка пирата справа от текста
+            screen.blit(self.renderer.pirate_image, (x_pos, 35))  # Отрисовываем пирата
+
+            # Отрисовка пунктов меню
             for i, item in enumerate(menu_items):
                 text = font.render(item, True, (255, 255, 255))
                 screen.blit(text, (WINDOW_WIDTH // 2 - text.get_width() // 2, 200 + i * 100))
+
             pygame.display.flip()
 
             for event in pygame.event.get():
@@ -111,7 +131,7 @@ class GameClient:
                         return "Change User"
                     elif event.key == pygame.K_4:
                         return "Exit"
-
+                    
     def play_game(self, screen, clock):
         # Сброс состояния игры
         self.space_pressed = False
