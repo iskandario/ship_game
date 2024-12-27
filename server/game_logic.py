@@ -25,37 +25,35 @@ class GameLogic:
         self.game_over_timer = 0  # Таймер для завершения игры
 
     def generate_ships(self):
-        """Создаёт новые корабли и обновляет их движение."""
-        # Удаляем корабли, которые вышли за пределы поля
         self.ships = [
             ship for ship in self.ships
             if not ship.get("out_of_bounds")
         ]
 
         # Генерация новых кораблей
-        if len(self.ships) < 2 and random.random() < 0.02:
+        if len(self.ships) < 2 and random.random() < 0.03:
             self.ships.append({
                 "id": self.ship_id_counter,
                 "x": -50,  # Начинаем за левым краем игрового поля
-                "y": random.randint(WINDOW_HEIGHT // 4, WINDOW_HEIGHT // 2),  # Генерация в нижней части верхней половины экрана
-                "speed": random.uniform(*SHIP_SPEED_RANGE),
-                "base_y": random.randint(WINDOW_HEIGHT // 4, WINDOW_HEIGHT // 2),  # Базовая высота для синусоиды
+                "y": random.randint(WINDOW_HEIGHT // 4, WINDOW_HEIGHT // 2),  # Генерация в верхней половине экрана
+                "speed": random.uniform(*SHIP_SPEED_RANGE),  # Используем оригинальный диапазон скорости
+                "base_y": random.randint(WINDOW_HEIGHT // 4, WINDOW_HEIGHT // 2),  # Базовая высота
                 "out_of_bounds": False,
-                "wave_offset": random.uniform(0, math.pi * 2),  # Сдвиг фазы синусоиды
+                "wave_offset": random.uniform(0, math.pi * 2),  # Сдвиг для синусоиды
             })
             self.ship_id_counter += 1
 
         for ship in self.ships:
             # Лёгкое изменение скорости
-            if random.random() < 0.1:  # 10% вероятность небольшого изменения скорости
-                ship["speed"] += random.uniform(-0.1, 0.1)
-                ship["speed"] = max(0.5, min(ship["speed"], max(SHIP_SPEED_RANGE)))
+            if random.random() < 0.1:  # 10% вероятность изменения скорости
+                ship["speed"] += random.uniform(-0.05, 0.05)  # Более плавное изменение скорости
+                ship["speed"] = max(0.5, min(ship["speed"], max(SHIP_SPEED_RANGE)))  # Ограничение скорости
 
             # Движение по синусоиде
             ship["y"] = ship["base_y"] + math.sin(ship["x"] * 0.02 + ship["wave_offset"]) * 10
 
             # Обновляем положение корабля
-            ship["x"] += ship["speed"] * 0.008
+            ship["x"] += ship["speed"] * 0.008  # Возвращаем оригинальную скорость
             if ship["x"] >= WINDOW_WIDTH:  # Корабль вышел за правую границу поля
                 ship["out_of_bounds"] = True
 
