@@ -1,0 +1,6 @@
+certifi==2023.7.22
+greenlet==3.0.1
+logging==0.4.9.6
+msgpack==1.0.7
+pygame==2.6.1
+setuptools==68.2.2
