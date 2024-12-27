@@ -34,12 +34,12 @@ class GameLogic:
         if len(self.ships) < 2 and random.random() < 0.03:
             self.ships.append({
                 "id": self.ship_id_counter,
-                "x": -50,  # Начинаем за левым краем игрового поля
-                "y": random.randint(WINDOW_HEIGHT // 4, WINDOW_HEIGHT // 2),  # Генерация в верхней половине экрана
-                "speed": random.uniform(*SHIP_SPEED_RANGE),  # Используем оригинальный диапазон скорости
-                "base_y": random.randint(WINDOW_HEIGHT // 4, WINDOW_HEIGHT // 2),  # Базовая высота
+                "x": -50,  
+                "y": random.randint(WINDOW_HEIGHT // 4, WINDOW_HEIGHT // 2), 
+                "speed": random.uniform(*SHIP_SPEED_RANGE),  
+                "base_y": random.randint(WINDOW_HEIGHT // 4, WINDOW_HEIGHT // 2.1),  
                 "out_of_bounds": False,
-                "wave_offset": random.uniform(0, math.pi * 2),  # Сдвиг для синусоиды
+                "wave_offset": random.uniform(0, math.pi * 2),  
             })
             self.ship_id_counter += 1
 
