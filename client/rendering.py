@@ -15,7 +15,7 @@ class Renderer:
         self.gun_image = pygame.transform.scale(self.assets["gun"], (70, 140))
         self.bomb_image = pygame.transform.scale(self.assets["bomb"], (20, 20))
         self.boom_image = pygame.transform.scale(self.assets["boom"], (80, 40))
-        self.pirate_image = pygame.transform.scale(self.assets["pirate"], (50, 50))
+        self.pirate_image = pygame.transform.scale(self.assets["pirate"], (80, 80))
 
     def render(self, screen, ships, gun_state, bombs, explosions):
         screen.blit(self.background, (0, 0))  # Отрисовка фона
@@ -34,8 +34,8 @@ class Renderer:
 
 
         gun_x, gun_y = gun_state["x"], gun_state["y"]
-        pirate_x = gun_x + 15   
-        pirate_y = gun_y - 15  
+        pirate_x = gun_x + 250   
+        pirate_y = gun_y   
         screen.blit(self.pirate_image, (pirate_x, pirate_y))
 
         gun_angle = gun_state["angle"]
