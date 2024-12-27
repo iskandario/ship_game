@@ -17,6 +17,7 @@ class GameLogic:
         self.ship_id_counter = 1
         self.ships_destroyed = 0
         self.shots_fired = 0  
+        self.game_over = False
         self.game_over_timer = 0  # Таймер для завершения игры
         self.last_explosion_time = 0 
         # Центрируем пушку
@@ -59,10 +60,13 @@ class GameLogic:
                 ship["out_of_bounds"] = True
 
     def fire_bomb(self):
+        if self.shots_fired >= 10:  # Блокируем 11-й выстрел
+            self.game_over = True
+            return
         if len(self.bombs) < 10:  # Ограничение на 10 активных снарядов
             tip_x, tip_y = self.gun.get_tip_position()
             self.bombs.append(Bomb(tip_x, tip_y, self.gun.angle))
-            self.shots_fired += 1
+            self.shots_fired += 1  # Увеличиваем счетчик после успешного выстрела
 
     def update_gun(self, command):
         """Обновляет угол пушки на основе команды."""
@@ -96,12 +100,9 @@ class GameLogic:
                     break
 
     def is_game_over(self):
-        """Проверяет, завершена ли игра с задержкой."""
-        # Игра завершена только после последнего взрыва
-        if self.shots_fired >= 10 and len(self.explosions) == 0:
-            # Если прошел достаточно времени после последнего взрыва
-            if time.time() - self.last_explosion_time > 1:
-                return True
+        """Проверяет, завершена ли игра."""
+        if self.game_over:  # Завершаем игру, если флаг установлен
+            return True
         return False
 
 
@@ -116,6 +117,8 @@ class GameLogic:
                 "angle": self.gun.angle,
             },
             "ships_destroyed": self.ships_destroyed,
+            "shots_fired": self.shots_fired,
+            "game_over": self.is_game_over(),  # Передаем флаг завершения игры
         }
 
 
