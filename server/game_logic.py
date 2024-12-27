@@ -25,6 +25,7 @@ class GameLogic:
         self.game_over_timer = 0  # Таймер для завершения игры
 
     def generate_ships(self):
+        # Удаляем корабли, которые вышли за пределы поля
         self.ships = [
             ship for ship in self.ships
             if not ship.get("out_of_bounds")
@@ -32,17 +33,24 @@ class GameLogic:
 
         # Генерация новых кораблей
         if len(self.ships) < 2 and random.random() < 0.03:
-            self.ships.append({
-                "id": self.ship_id_counter,
-                "x": -50,  
-                "y": random.randint(WINDOW_HEIGHT // 4, WINDOW_HEIGHT // 2), 
-                "speed": random.uniform(*SHIP_SPEED_RANGE),  
-                "base_y": random.randint(WINDOW_HEIGHT // 4, WINDOW_HEIGHT // 2.1),  
-                "out_of_bounds": False,
-                "wave_offset": random.uniform(0, math.pi * 2),  
-            })
-            self.ship_id_counter += 1
+            max_attempts = 10  # Максимальное количество попыток генерации
+            for _ in range(max_attempts):
+                new_ship_y = random.randint(WINDOW_HEIGHT // 4, WINDOW_HEIGHT // 2.2)
+                # Проверяем минимальное расстояние между новыми и существующими кораблями
+                if all(abs(new_ship_y - ship["y"]) > 100 for ship in self.ships):
+                    self.ships.append({
+                        "id": self.ship_id_counter,
+                        "x": -50,  # Начинаем за левым краем игрового поля
+                        "y": new_ship_y,  # Новая координата по оси Y
+                        "speed": random.uniform(*SHIP_SPEED_RANGE),  # Скорость корабля
+                        "base_y": new_ship_y,  # Базовая высота для синусоиды
+                        "out_of_bounds": False,
+                        "wave_offset": random.uniform(0, math.pi * 2),  # Сдвиг фазы синусоиды
+                    })
+                    self.ship_id_counter += 1
+                    break  # Генерация успешна, выходим из цикла
 
+        # Обновляем положение кораблей
         for ship in self.ships:
             # Лёгкое изменение скорости
             if random.random() < 0.1:  # 10% вероятность изменения скорости
@@ -53,7 +61,7 @@ class GameLogic:
             ship["y"] = ship["base_y"] + math.sin(ship["x"] * 0.02 + ship["wave_offset"]) * 10
 
             # Обновляем положение корабля
-            ship["x"] += ship["speed"] * 0.008  # Возвращаем оригинальную скорость
+            ship["x"] += ship["speed"] * 0.008  # Скорость перемещения
             if ship["x"] >= WINDOW_WIDTH:  # Корабль вышел за правую границу поля
                 ship["out_of_bounds"] = True
 
@@ -125,7 +133,7 @@ class Bomb:
         self.x = x
         self.y = y
         self.angle = angle
-        self.speed = 2  # Скорость бомбы
+        self.speed = 2.3  # Скорость бомбы
 
     def move(self):
         self.x += self.speed / 200 * math.cos(math.radians(self.angle))

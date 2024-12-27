@@ -11,7 +11,7 @@ class Renderer:
 
         # Масштабируем элементы под размеры окна
         self.background = pygame.transform.scale(self.assets["background"], (self.window_width, self.window_height))
-        self.ship_image = pygame.transform.scale(self.assets["ship"], (60, 50))
+        self.ship_image = pygame.transform.scale(self.assets["ship"], (55, 45))
         self.gun_image = pygame.transform.scale(self.assets["gun"], (80, 150))
         self.bomb_image = pygame.transform.scale(self.assets["bomb"], (20, 20))
         self.boom_image = pygame.transform.scale(self.assets["boom"], (90, 50))
