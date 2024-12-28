@@ -125,7 +125,7 @@ class GameLogic:
             },
             "ships_destroyed": self.ships_destroyed,
             "shots_fired": self.shots_fired,
-            "game_over": self.is_game_over(),  # Передаем флаг завершения игры
+            "game_over": self.is_game_over(),  
         }
 
 
