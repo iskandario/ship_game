@@ -36,7 +36,7 @@ class GameLogic:
         if len(self.ships) < 2 and random.random() < 0.03:
             max_attempts = 10  # Максимальное количество попыток генерации
             for _ in range(max_attempts):
-                new_ship_y = random.randint(WINDOW_HEIGHT // 4, WINDOW_HEIGHT // 2.2)
+                new_ship_y = random.randint(WINDOW_HEIGHT // 4, int(WINDOW_HEIGHT // 2.2))
                 # Проверяем минимальное расстояние между новыми и существующими кораблями
                 if all(abs(new_ship_y - ship["y"]) > 100 for ship in self.ships):
                     self.ships.append({
