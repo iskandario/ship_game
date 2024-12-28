@@ -10,9 +10,9 @@ class Gun:
     def rotate(self, direction):
         """Поворачивает пушку влево или вправо."""
         if direction == "left" and self.angle < 180:
-            self.angle += 2
+            self.angle += 3
         elif direction == "right" and self.angle > 0:
-            self.angle -= 2
+            self.angle -= 3
 
     def get_tip_position(self):
         """Возвращает координаты конца пушки."""
